@@ -132,4 +132,3 @@ dist
 node_modules
 server.cert
 server.key
-config.js
