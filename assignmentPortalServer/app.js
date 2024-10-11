@@ -1,4 +1,6 @@
+// Required modules and middleware setup
 var createError = require('http-errors');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
 const morgan = require('morgan');
@@ -29,6 +31,10 @@ const connect = async () => {
   await mongoose.connect(url, {});
 };
 
+/**
+ * Connects to MongoDB server.
+ * Logs a success message on successful connection or an error message on failure.
+ */
 connect()
   .then(() => console.log('Successfully connected to the mongodb server!'))
   .catch((err) => console.error(err));
@@ -46,22 +52,27 @@ app.all('*', (req, res, next) => {
   }
 });
 
-// Initialize session middleware
+/**
+ * Session setup using express-session and session-file-store.
+ */
 app.use(session({
   name: 'session-id',
   secret: '12345-67890-09876-54321',
   saveUninitialized: false,
   resave: false,
   store: new FileStore({
-    path: './sessions', // Specify the path explicitly
-    retries: 0 // Set the number of retries to 0 to prevent retries
+    path: './sessions',
+    retries: 0
   })
 }));
 
+// Middleware
+app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
-
 app.use(express.json({ limit: '10mb' }));
+
+// Route setup
 app.use('/', indexRouter);
 app.use('/admin', adminRouter);
 app.use('/users', usersRouter);
@@ -80,7 +91,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 
-// catch 404 and forward to error handler
+/**
+ * Catch 404 errors and forward to the error handler.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
 app.use(function (req, res, next) {
   next(createError(404));
 });
@@ -94,11 +110,6 @@ app.use((req, res) => {
   res.status(404).json({
     message: 'Route Not Found',
   });
-});
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
 });
 
 /**
