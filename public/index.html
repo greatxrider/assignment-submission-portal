@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignment Portal - Upload Your Assignments</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      /* Use flexbox */
+      flex-direction: column;
+      /* Arrange items in a column */
+      align-items: center;
+      /* Center items horizontally */
+      justify-content: center;
+      /* Center items vertically */
+      height: 100vh;
+      /* Full viewport height */
+      gap: 15px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    p {
+      margin: 10px 0;
+      /* Add some margin between paragraphs */
+    }
+  </style>
+
+</head>
+
+<body>
+  <h1>Assignment Portal</h1>
+  <p>Welcome to the portal where users can upload assignments.</p>
+
+  <!-- Facebook Login Button -->
+  <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>
+
+  <div id="status"></div>
+
+  <script>
+    // This function is called with the results from FB.getLoginStatus().
+    function statusChangeCallback(response) {
+      console.log('statusChangeCallback');
+      console.log(response);
+      // Check the response status to determine the login state
+      if (response.status === 'connected') {
+        // Logged into your app and Facebook.
+        testAPI();
+      } else {
+        // The person is not logged into your app or Facebook.
+        document.getElementById('status').innerHTML = 'Please log into this app.';
+      }
+    }
+
+    // Called when the login button is clicked
+    function checkLoginState() {
+      FB.getLoginStatus(function (response) {
+        statusChangeCallback(response);
+      });
+    }
+
+    // Initialize the Facebook SDK
+    window.fbAsyncInit = function () {
+      FB.init({
+        appId: '517702871119442', // Your app ID
+        xfbml: true,
+        version: 'v2.10' // Use the latest version available
+      });
+      FB.AppEvents.logPageView();
+
+      // Check the login status on page load
+      FB.getLoginStatus(function (response) {
+        statusChangeCallback(response);
+      });
+    };
+
+    // Load the Facebook SDK asynchronously
+    (function (d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {
+        return;
+      }
+      js = d.createElement(s);
+      js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js"; // Use HTTPS
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    // Test API call after successful login
+    function testAPI() {
+      console.log('Welcome! Fetching your information....');
+      FB.api('/me', function (response) {
+        console.log('Successful login for: ' + response.name);
+        document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '!';
+      });
+    }
+  </script>
+</body>
+
+</html>
